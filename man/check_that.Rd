@@ -12,7 +12,7 @@ check_that(check_desc, code, ...)
 \item{code}{The collection of code blockes to run}
 }
 \value{
-This function will return `global_output` to the `.GlobalEnv` for use in other functions of the package. This is a dataframe with details about the results fo the `check`
+This function will return `global_output` to the `.GlobalEnv` for use in other functions of the package. This is a dataframe with details about the results fo the `c`
 }
 \description{
 This will combine all tests into a `check` as a way of colecting all values for subsequent display
@@ -20,7 +20,7 @@ This will combine all tests into a `check` as a way of colecting all values for 
 \examples{
 
 output = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
-test_equal(descr = "test description text", 12,12)
-test_identical(descr = "test description text", 12,12.1)})
+                                                             test_equal(descr = "test description text", 12,12)
+                                                           test_identical(descr = "test description text", 12,12.1)})
 
 }
