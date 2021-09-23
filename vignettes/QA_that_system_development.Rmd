@@ -1,0 +1,628 @@
+---
+title: "`QA_That` platform for testing out (QA) tables "
+output: html_notebook
+author: George Papadopoulos
+---
+
+
+## Intro 
+
+
+The obvious inspiration comes from the `test_that` package in R that in turn was inspirted from test practices applied in C#, Java, Python etc. Many thanks to all the developers.
+
+**Things may change as development progresses so do keep in mind that.**
+
+
+The concept here is to include `tests` that are combined into a `checks` that are in turn collected into `sesctions` for each area/code we want to QA.
+
+
+More specifically, the collection here wil aim at including the following:
+
++ The basic element, the atom of QA will be the `test`:
+    + `test_equal`
+    + `test_identical`
+    + `test_match`
+    + `test_numeric`
+    + `test_character`
+    + `test_true`
+    + `test_false`
+    + `test_NA`
+    + any other that may arise in the future
++ The `tests` will be combined into `checks` as follows:
+    + `check_that("text description", {test_equal(...), test_identical(...). ...}  )`
+    + output will be a sumam ry of the whole process
+    + see if warnings can be caught there as well
+    + Other items to be added in the future
++ Tests will be combined into `QA_that_` sections regarding spcecific areas  i want to QA
+    + `QA_that_`(s) are files containing all checks that need to be conducted in the project. The corresponding filenames will need to start with
+    `QA_that_` so as to distinguish them from anything else and also they need to be included in a `QA_that` folder
+    + `QA_that_`(s) can be fore example tests that need to be conducted in A or B tables in PRSQ
+    + For better structure all files should start with `QA_that_` prefix so as to be able to collect results better
+
+
+More to be aded as we go along with coding 
+
+
+
+```{r}
+
+library(tidyverse)
+library(emojifont)
+library(purrr)
+library(magrittr)
+library(crayon)
+
+# emoji(search_emoji('smile'))
+
+
+
+```
+
+
+## Creating core funcitons
+
+Need also to add code to catch and catalog warnings - to look into that later
+
+
+```{r}
+
+
+# test equal function allowing for rounding off if needed
+
+
+test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
+    
+    output = NULL
+    
+    if(is.numeric(source_value) & is.numeric(test_value)){
+    
+    
+            
+            r_sval = round(source_value, digits = rounding_digits)
+            r_tval = round(test_value, digits = rounding_digits)
+            
+            
+            if(r_sval == r_tval){ output = T}
+            else if(r_sval != r_tval){ output = F}
+            
+            
+            
+            
+            
+    }else {stop("Values must be numeric. To test for text values use test_match() instead.")}
+    
+   
+    # assign global variables to keep track between different checks etc
+    assign("global_output", add_row(.GlobalEnv$global_output, test_description = descr, outcome = output), envir = .GlobalEnv )
+    
+    # browser()    
+    # return(output)
+    
+    
+}
+
+
+
+test_identical = function(descr, source_value, test_value, ...){
+    
+    output = NULL
+    
+    if(is.numeric(source_value) & is.numeric(test_value)){
+            
+            if(source_value == test_value){ output = T}
+            else if(source_value != test_value){ output = F}
+            
+    }else {stop("Values must be numeric. To test for text values use test_match() instead.")}
+    
+    
+    
+    # assign global variables to keep track between different checks etc
+    assign("global_output", add_row(.GlobalEnv$global_output, test_description = descr, outcome = output), envir = .GlobalEnv )
+    
+    # return(output)
+    
+}
+
+
+
+
+test_match = function(descr,source_value, test_value, ...){
+    
+    output = NULL
+    
+    if(is.character(source_value) & is.character(test_value)){
+            
+            if(source_value == test_value){ output = T}
+            else if(source_value != test_value){ output = F}
+            
+    }else {stop("Values must be characters. To test for numeric values use test_equal() or test_identical() instead.")}
+    
+    # assign global variables to keep track between different checks etc
+    assign("global_output", add_row(.GlobalEnv$global_output, test_description = descr, outcome = output), envir = .GlobalEnv )
+    # return(output)
+    
+}
+
+
+
+
+
+```
+
+
+
+
+## Adding `tests` to a `check`
+
+
+start here:
+
++ check that the function outputs the arguments correctly and continue with the rest of the `test` functions implementation - test OK
++ introduce `tryCatch` segments to the `check_that` structure - **to be created**
++ some changes made to the check that function and the code now works as intended. The code segment evalueates properly and the global variable(s) are updated as expected. 
++ the items to complete now includeadding further functionality to the `check_that` function and make it informative enough to the user by including textual aids in the form of a text ouput progress report in the console. - Initial pass OK
+
+
+
++ The idea now is to create a global storage varioable at a "QA_that" level so as to probvide overall checks for each QA file - remember the QA strucure will need to include the following
+
+    + `QA_that_***` file that will contain all the checks
+    + Multiple (possible) `check_that` segments that will contain tests
+    + Multiple `test_that` segments that will contain the idividual tests
+
++ will now need to a way to summarise the overall process so a global variable at `QA_that` level will be required - **completed**
++ in addition, a constructor function to add all components needed before the QA process starts (?), for example: **completed**
+    
+    + Add or initialise global containers where this is not possible in the amin tests
+    + create directories for the QA process
+    + more to be added later (?)
+
+
+
+
+
+
+
+```{r}
+
+# global_output = tibble(test_description = character(), outcome = character())
+
+
+
+check_that = function(check_desc,code, ...){
+    
+    # initialise global container variable
+    global_output = tibble(test_description = character(), outcome = logical())
+    
+    # assign and create a global version of the variable
+    assign("global_output", global_output, envir = .GlobalEnv)
+    
+    #evaluate the tests
+    eval(code)
+    
+    #save to global envir and updawte with the check description
+    .GlobalEnv$global_output %<>% add_column(check_description = check_desc, .before = "test_description")
+    
+    
+    # housekeeping and presentation
+    
+    if(sum(.GlobalEnv$global_output$outcome) == dim(.GlobalEnv$global_output)[1]){
+        cat(paste0("\n Checking that: ", check_desc, " .... PASS ", sample(emoji(search_emoji('smile')), 1, replace = T )))
+    }else{
+        not_pass = .GlobalEnv$global_output %>% filter(outcome == F)
+        cat(paste0("Checking that: ", check_desc, " ... FAIL \u274c ", "\n"))
+
+    }
+
+    
+    cat("\n Summary of checks:-------------------------------------", "\n")
+    cat(paste0(.GlobalEnv$global_output$test_description, " \t ---->",if_else(.GlobalEnv$global_output$outcome, paste0("\t PASS ", green("\u2714"),"\n"), 
+                                                                              "\t FAIL \u274c \n") ) )
+    cat("-------------------------------------------------------")
+    
+    
+    
+    
+    ## create another global storage in a "QA_that" level so as to store overall QA level results 
+    
+    # 
+    # # to bind to a globeal oveall variable combining all checks in a file
+    # assign("global_overall_output", rbind(.GlobalEnv$global_overall_output, .GlobalEnv$global_output), envir = .GlobalEnv)
+    # 
+    
+    return(.GlobalEnv$global_output)
+    
+    
+}
+
+
+
+
+
+output1 = check_that(check_desc = "numeric is matching", {test_equal(descr = "test description text", 11,11)
+                                                    test_equal(descr = "test description text", 12,12)
+                                                    test_identical(descr = "test description text", 12,12.1)})
+
+
+output2 = check_that(check_desc = "text is matching", {test_match(descr = "test description match text", "DFD","DFD")})
+
+
+# ✗ = \u2717  BALLOT X
+# ✘ = \u2718  HEAVY BALLOT X
+# ❌ = \u274c CROSS MARK
+# × = \u00D7  MULTIPLICATION SIGN
+# ╳ = \u2573  BOX DRAWINGS LIGHT DIAGONAL CROSS
+# ☓ = \u2613  SALTIRE (St. Andrew's Cross)
+# ✕ = \u2715  MULTIPLICATION X
+# ✖ = \u2716  HEAVY MULTIPLICATION X
+# ⨉ = \u2A09  N-ARY TIMES OPERATOR
+# ✓ = \u2713  CHECK MARK
+# ✔ = \u2714  HEAVY CHECK MARK
+# 
+
+
+
+
+
+
+
+```
+
+
+
+
+## Adding `use_QA` function to create QA structure
+
+**Completed**
+
+Thisngs tro remember are as follows:
+
++ QA files should start with `QA_that_` so that they make sense and also to enbable the system to pick them up esier. For examnple `QA_that_A_tables_are_in_line_with_B.R`
++ a number of global variables are crated to keep track of things. You wont need to worry about that when coding tests - Discontinued
++ all QA should be in one folder and the starting point is considered the root directory of your project
++ IMPORTANT: the function `use_QA()` needs to be run from your console  in the root directory - otherwise the folders will be created in the folder where the function resides!
++ to add more as needed
+
+
+
+
+```{r}
+
+QAname = "Atables_etc" # to test function
+
+use_QA = function(QAname){
+    
+    # browser()
+    root = getwd()
+    QA_folder_path = paste0(root, "/QA_that")
+    QA_file_w_path = paste0(QA_folder_path,"/","QA_that_",QAname,".R")
+    QA_file_name = paste0("QA_that_",QAname,".R")
+    
+    log_dir = paste0(root,"/QA_that/QA_logs") # log files directory
+
+    
+    ## create a QA folder to house the tests etc
+    
+    if(dir.exists(QA_folder_path)){
+        stop(paste0("directory ", "`QA_that`", " alrady exists. Consider renaming it to keep existing tests.
+             Ideally one such QA folder should exist per project to avoid confusion."))
+    }else{
+        
+        dir.create(QA_folder_path)
+        cat(paste0("\n", "directory ","`QA_that`", " was created ----> ", green("\u2714")))
+        
+    }
+    
+    ## to write the first file
+    
+    if(file.exists(QA_file_w_path)){
+        stop("file exists in destination directory. Consider renaming.")
+    }else{
+        file.create(QA_file_w_path)
+        cat(paste0("\n", "file ",QA_file_name, " was created ----> ", green("\u2714")))
+        
+    }
+    
+    
+    
+    ## adding global container variable to collect results from all `check_that`sections - Disontinued as it would be better to have each QA stream separate
+    ## and collect results in each
+    
+    # global_check_that = tibble(check_description = character(), test_description = character(), outcome = logical())
+    
+    
+    # to get the path of the current file if needed
+    # full_script_path = rstudioapi::getSourceEditorContext()$path
+
+    # current_script = str_extract(full_script_path, "QA_that_.+\\.R$")
+
+    # create folder to save the log file (s)
+    
+    
+    if(dir.exists(log_dir)){
+        stop("QA logs directoryexists. Consider renaming.")
+    }else{
+        dir.create( log_dir )
+        cat(paste0("\n", "QA_logs directory was created ----> ", green("\u2714")))
+        
+    }
+    
+    
+    
+    
+    
+}
+
+
+use_QA("tables A match B")
+
+
+
+```
+
+
+
+
+## adding `summary` function
+
+will need  to add an option to delete and reuse the same file in case multiple runs are needed.
+
+
+```{r}
+
+
+
+
+map_write_to_log = function(check_d, log_df, log_file){
+    
+    # browser()
+
+    
+    # check_d = log_df$check_description
+    test_d = log_df$test_description
+    test_outcome = log_df$outcome %>% if_else("\u2714", "\u274c") # tick or else a cross
+    
+    
+
+    
+    
+    cat(paste0("\n Checking that: ", check_d[1], " ############################### \n \n"), file = log_file)
+               
+    cat(paste0("\t \t", test_d," ----------> ", test_outcome), file = log_file, sep = "\n" )
+    
+    
+    if(!is.character(check_d)){
+        cat( "\t  Check Description is not a character string... Make sure the log data frame is structured properly \n", file = log_file, sep = "\n" )
+    } else if(is.null(check_d)){
+        cat("\t  The check descriptiopn is null (empty) \n", file = log_file, sep = "\n" )
+    } else if(is.null(log_df)){
+        cat("\t  The log data frame is null (empty) \n")
+    }else {
+        
+        cat("\t -------------------------------------------------------------", file = log_file, sep = "\n")
+        cat("\t  log data frame and check descriptions look OK", file = log_file, sep = "\n"  )
+        cat("\t -------------------------------------------------------------", file = log_file, sep = "\n")
+        
+        }
+    
+    
+    
+    # Check Description has multiple entries for a single group
+    
+    return(TRUE)
+    
+    
+}
+
+
+
+
+
+map_write_to_log(output1)
+
+
+
+cat(paste0("\n Checking that: ", check_desc, " .... PASS ", sample(emoji(search_emoji('smile')), 1, replace = T )))
+
+rstudioapi::getSourceEditorContext()$path
+
+
+
+
+summary_QA = function(..., log_file_name = NULL, del.flag = T){
+    
+    # browser()
+    
+    dots = list(...)
+    
+    log_df = map_dfr(dots, rbind)
+    
+    # get the file name of the current script
+    # create a directory for the logs
+    
+    
+    root = getwd() # get root
+    log_dir = paste0(root,"/QA_that/QA_logs") # log files directory
+    log_fname_w_path = paste0(log_dir,"/", log_file_name)
+
+    
+    if(is.null(log_file_name)){
+        stop("log file name is NULL. Consider naming the log file to be created.")
+    }else if(del.flag){
+        unlink(log_fname_w_path)
+        cat("Deleting file from previous run --> del.flag==T")
+    }
+    
+    
+        
+    log_file = file(log_fname_w_path, open = "a") #open a  file and have it ready to append text to it
+
+    
+    ### to get the file name just right here -  it has .r at the end
+    # browser()
+    
+    if(!dir.exists(log_dir)){
+        dir.create(paste0(root,"/QA_that/QA_logs"))
+        cat(paste("creating QA_logs directory in `QA_that` folder"))
+    }
+    
+    
+    
+    # group the log data frame 
+    log_df_grouped = log_df %>% group_by(check_description) %>% nest()
+    
+    
+    # now use a map to paste to the log file for each category
+    
+    map2( log_df_grouped$check_description, log_df_grouped$data, map_write_to_log, log_file = log_file)
+    
+    
+    ## START HERE
+    
+    
+    return(log_df)    
+    
+
+    
+}
+
+
+
+
+aa = summary_QA(output1,output2, log_file_name = "log1.txt", del.flag = T)
+
+
+
+
+
+```
+
+
+
+
+### To test functions etc
+
+```{r}
+
+sourceVal = 121.1234
+testVal = 121.1333
+
+test_equal(source_value = sourceVal, test_value = testVal, 2)
+
+
+sourceVal = 121
+testVal = "121"
+
+test_identical(source_value = sourceVal, test_value = testVal)
+
+
+
+sourceVal = "121"
+testVal = "121"
+
+test_match(source_value = sourceVal, test_value = testVal)
+
+
+eval(5+5)
+
+
+eval({1+5})
+
+
+check_that("1212!", {5+3})
+
+aa = check_that("1212!", {aa.1 = test_identical(1,1)
+                    aa.2 = test_equal(11.12,12)}, b = 1)
+
+ab  = as.list(environment(check_that("1212!", {test_identical(1,1)}) ))
+
+
+(2+3)
+a = {2+3; 4+5}
+(invisible(2+3))
+{invisible(2+3)}
+
+
+############# test dynamically augmented check list
+
+check_that(check_desc = "a check description here", {test_equal(descr = "a description here", 11.1,12)})
+
+
+
+
+test_equal(descr = "a description here", 11.1,12,check_desc = "general check")
+
+test_match(descr = "test for a match", "2323", "2323")
+
+test_identical(descr = "test for identical numerical match", 2323, 2323)
+
+test_identical(descr = "will it pass now?", 2323.1, 2323)
+
+
+global_output
+
+
+
+
+```
+
+
+
+## conduct QA tests
+
+
+```{r}
+
+
+
+
+output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
+  test_equal(descr = "test description text", 12,12)
+  test_identical(descr = "test description text", 12,12.1)})
+
+
+output33 = check_that(check_desc = "text round 2", {test_match(descr = "test description match text", "DFD","DFD")})
+
+
+
+output45 = check_that(check_desc = "test round 3", {test_equal(descr = "test rounding equal 11 with 11.3 ", 11,11.3, rounding_digits = 0)
+  test_equal(descr = "check that 12 matches with 12.2 using rounding up", 12,12.4, rounding_digits = 0)
+  test_identical(descr = "test description text", 12,12.1)
+  test_identical(descr = "check identical  that 10 i s equal to 10.2 ", 10,10.1)
+  test_match(descr = "checking that two test strings match", "DFDF","dfdf")
+  
+  
+  
+})
+
+
+
+
+bb = summary_QA(output1,output2, output3, log_file_name = "log that other file.txt")
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
