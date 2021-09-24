@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{test_equal}
 \alias{test_equal}
-\title{Test to check whether two values are equal.}
+\title{Test to check whether two numeric values are equal.}
 \usage{
 test_equal(descr, source_value, test_value, rounding_digits = 1, ...)
 }
@@ -16,17 +16,24 @@ test_equal(descr, source_value, test_value, rounding_digits = 1, ...)
 \item{rounding_digits}{This is the number of rounding up digits to be used when comparing. Default is 1 digit}
 }
 \value{
-All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`
+All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`.This is a
+             binary TRUE or FALSE result for each test.
 }
 \description{
 The way this function works it will allow for some digits to be rounded off in case
-numbers with minor differences
+numbers with minor differences.
+}
+\details{
+This function is meant to run in teh context of a `check` andnot on its own. Otherwise there will be no way to combine to a global ouput.
 }
 \examples{
 
 ## You can choose to use the function on its own but is best suited for use within a `check` and
 ## this within a `QA_that` environment
 
-test_equal(descr = "check that 12 matches with 12.2 using rounding up", 12,12.4, rounding_digits = 0)
+output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
+ test_equal(descr = "test description text", 12,12)
+ test_identical(descr = "test description text", 12,12.1)
+ test_match(descr = "checking that two test strings match", "DFDF","dfdf")})
 
 }
