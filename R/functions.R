@@ -40,16 +40,12 @@ test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
 
   if(is.numeric(source_value) & is.numeric(test_value)){
 
-
-
     r_sval = round(source_value, digits = rounding_digits)
     r_tval = round(test_value, digits = rounding_digits)
 
 
-    if(r_sval == r_tval){ output = T}
-    else if(r_sval != r_tval){ output = F}
-
-
+    if(all(r_sval == r_tval)){ output = T}
+    else if(!all(r_sval == r_tval)){ output = F}
 
 
 
@@ -94,8 +90,8 @@ test_identical = function(descr, source_value, test_value, ...){
 
   if(is.numeric(source_value) & is.numeric(test_value)){
 
-    if(source_value == test_value){ output = T}
-    else if(source_value != test_value){ output = F}
+    if(all(source_value == test_value)){ output = T}
+    else if(!all(source_value == test_value)){ output = F}
 
   }else {stop("Values must be numeric. To test for text values use test_match() instead.")}
 
@@ -136,8 +132,8 @@ test_match = function(descr,source_value, test_value, ...){
 
   if(is.character(source_value) & is.character(test_value)){
 
-    if(source_value == test_value){ output = T}
-    else if(source_value != test_value){ output = F}
+    if(all(source_value == test_value)){ output = T}
+    else if(!all(source_value == test_value)){ output = F}
 
   }else {stop("Values must be characters. To test for numeric values use test_equal() or test_identical() instead.")}
 
