@@ -11,43 +11,143 @@ library(roxygen2)
 
 
 
+#
+# #' Test to check whether two numeric values are equal.
+# #'
+# #'
+# #' The way this function works it will allow for some digits to be rounded off in case there are
+# #' numbers with minor differences.
+# #'
+# #' This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
+# #' the corresponding global container will be deleted when a `check` is ran.
+# #'
+# #'
+# #' @param descr A text string to explain what this test is about
+# #' @param source_value The one end of the comaprison - This is the source/origin you are comapring to
+# #' @param test_value The other end of the comparison - This is the tested value
+# #' @param rounding_digits This is the number of rounding up digits to be used when comparing. Default is 1 digit
+# #'
+# #'
+# #' @return All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`.This is a
+# #'              binary TRUE or FALSE result for each test.
+# #'
+# #' @examples
+# #'
+# #' ## You can choose to use the function on its own but is best suited for use within a `check` and
+# #' ## this within a `QA_that` environment
+# #'
+# #' output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
+# #'  test_equal(descr = "test description text", 12,12)
+# #'  test_identical(descr = "test description text", 12,12.1)
+# #'  test_match(descr = "checking that two test strings match", "DFDF","dfdf")})
+# #'
+# test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
+#
+#   output = NULL
+#
+#   # check whether .GlobalEnv$global_output exists - otherwise the function will not run
+#
+#   if(!exists("global_output", envir = .GlobalEnv)){
+#
+#     warning("Global container not initialised - It is recommended to run this  function as part of an associated check.
+#             The container for a stand alone run will be overwritten. Output is set to 'global_output' variable")
+#
+#     .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
+#
+#
+#   if(is.numeric(source_value) & is.numeric(test_value)){
+#
+#
+#
+#     r_sval = round(source_value, digits = rounding_digits)
+#     r_tval = round(test_value, digits = rounding_digits)
+#
+#
+#     if(r_sval == r_tval){ output = T}
+#     else if(r_sval != r_tval){ output = F}
+#
+#
+#
+#
+#
+#   }else {stop("Values must be numeric. To test for text values use test_match() instead.")}
+#
+#
+#   # assign global variables to keep track between different checks etc
+#   assign("global_output", add_row(.GlobalEnv$global_output, test_description = descr, outcome = output), envir = .GlobalEnv )
+#
+#   # browser()
+#   # return(output)
+#
+#
+# }
+#
 
-#' Test to check whether two values are equal.
+
+
+#' Test to check whether two vectors are equal.
 #'
 #'
 #' The way this function works it will allow for some digits to be rounded off in case
 #' numbers with minor differences
 #'
+#' This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
+#' the corresponding global container will be deleted when a `check` is ran.
 #'
 #' @param descr A text string to explain what this test is about
-#' @param source_value The one end of the comaprison - This is the source/origin you are comapring to
-#' @param test_value The other end of the comparison - This is the tested value
+#' @param source_value The one end of the comaprison - This is the source/origin you are comapring to. In this function it has to be a
+#'                      vector of numeric values.
+#' @param test_value The other end of the comparison - This is the tested value. In this function it has to be a vector of numeric values.
 #' @param rounding_digits This is the number of rounding up digits to be used when comparing. Default is 1 digit
 #'
 #'
-#' @return All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`
+#' @return All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`. This is a
+#'              binary TRUE or FALSE result for each test.
 #'
 #' @examples
 #'
 #' ## You can choose to use the function on its own but is best suited for use within a `check` and
 #' ## this within a `QA_that` environment
 #'
-#' test_equal(descr = "check that 12 matches with 12.2 using rounding up", 12,12.4, rounding_digits = 0)
 #'
+#' a = c(1,2,3)
+#' b = c(1,2,4)
+#'
+#' output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
+#'  test_vector_equal(descr = "test description text", a,b)
+#'                                                             })
+
+
+
+
+
 test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
 
   output = NULL
 
-  if(is.numeric(source_value) & is.numeric(test_value)){
+  # check whether .GlobalEnv$global_output exists - otherwise the function will not run
+
+  if(!exists("global_output", envir = .GlobalEnv)){
+
+    warning("Global container not initialised - It is recommended to run this  function as part of an associated check.
+            The container for a stand alone run will be overwritten. Output is set to 'global_output' variable")
+
+    .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
+
+
+  if(is.numeric(source_value) & is.numeric(test_value) &   (length(source_value) ==  length(test_value))  ){
 
 
 
     r_sval = round(source_value, digits = rounding_digits)
     r_tval = round(test_value, digits = rounding_digits)
 
+    rndd <- r_sval == r_tval
 
-    if(r_sval == r_tval){ output = T}
-    else if(r_sval != r_tval){ output = F}
+    # if NA element it counts as 0 - catch when all of the elements are T or F
+    if(all(rndd)){ output = T}
+    else if(!all(rndd)){ output = F}
+    else{stop("values are out of bounds - neither TRUE or FALSE. Check if vectors have NA values.")}
 
 
 
@@ -68,10 +168,16 @@ test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
 
 
 
+
+
+
 #' Test to check whether two values are identical
 #'
 #'
 #' This function will test for strict equality between a source and a test value
+#'
+#' This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
+#' the corresponding global container will be deleted when a `check` is ran.
 #'
 #'
 #' @param descr A text string to explain what this test is about
@@ -79,25 +185,44 @@ test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
 #' @param test_value The other end of the comparison - This is the tested value
 #'
 #'
-#' @return All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`
+#' @return All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`.This is a
+#'              binary TRUE or FALSE result for each test.
 #'
 #' @examples
 #'
 #' ## You can choose to use the function on its own but is best suited for use within a `check` and
 #' ## this within a `QA_that` environment
 #'
-#' test_identical(descr = "test description text", 12,12.1)
-#'
+#' output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
+#'  test_equal(descr = "test description text", 12,12)
+#'  test_identical(descr = "test description text", 12,12.1)
+#'  test_match(descr = "checking that two test strings match", "DFDF","dfdf")})
+
+
 test_identical = function(descr, source_value, test_value, ...){
+
+
+  # check whether .GlobalEnv$global_output exists - otherwise the function will not run
+
+  if(!exists("global_output", envir = .GlobalEnv)){
+
+    warning("Global container not initialised - It is recommended to run this  function as part of an associated check.
+            The container for a stand alone run will be overwritten. Output is set to 'global_output' variable")
+
+    .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
+
+
 
   output = NULL
 
-  if(is.numeric(source_value) & is.numeric(test_value)){
+  if(is.numeric(source_value) & is.numeric(test_value)  & (length(source_value) ==  length(test_value))){
 
-    if(source_value == test_value){ output = T}
-    else if(source_value != test_value){ output = F}
+    all_equal <- source_value == test_value
 
-  }else {stop("Values must be numeric. To test for text values use test_match() instead.")}
+
+    if(all(all_equal)){ output = T}
+    else if(!all(all_equal)){ output = F}
+    else{stop("values are out of bounds - neither TRUE or FALSE. Check if vectors have NA values.")}
 
 
 
@@ -112,27 +237,44 @@ test_identical = function(descr, source_value, test_value, ...){
 #' Test to match whether a string matches a given source value
 #'
 #'
-#' This functioasn will test to see if two strings are identical
+#' This function will test to see if two strings are identical
 #'
+#' This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
+#' the corresponding global container will be deleted when a `check` is ran.
 #'
 #' @param descr A text string to explain what this test is about
 #' @param source_value The one end of the comaprison - This is the source/origin you are comapring to
 #' @param test_value The other end of the comparison - This is the tested value
 #'
 #'
-#' @return All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`
+#' @return All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`.This is a
+#'              binary TRUE or FALSE result for each test.
 #'
 #' @examples
 #'
 #' ## You can choose to use the function on its own but is best suited for use within a `check` and
 #' ## this within a `QA_that` environment
 #'
-#' test_match(descr = "checking that two test strings match", "DFDF","dfdf")
-#'
+#' output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
+#'  test_equal(descr = "test description text", 12,12)
+#'  test_identical(descr = "test description text", 12,12.1)
+#'  test_match(descr = "checking that two test strings match", "DFDF","dfdf")})
 
 test_match = function(descr,source_value, test_value, ...){
 
   output = NULL
+
+  # check whether .GlobalEnv$global_output exists - otherwise the function will not run
+
+  if(!exists("global_output", envir = .GlobalEnv)){
+
+    warning("Global container not initialised - It is recommended to run this  function as part of an associated check.
+            The container for a stand alone run will be overwritten. Output is set to 'global_output' variable")
+
+    .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
+
+
+
 
   if(is.character(source_value) & is.character(test_value)){
 
@@ -155,6 +297,7 @@ test_match = function(descr,source_value, test_value, ...){
 #'
 #' This will combine all tests into a `check` as a way of colecting all values for subsequent display
 #'
+#' This functiosn is meant to run with the associated `test` functions and not on its own.
 #'
 #' @param check_desc A text string to provide a description for the colelction of tests
 #' @param code The collection of code blockes to run

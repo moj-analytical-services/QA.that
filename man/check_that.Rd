@@ -17,6 +17,9 @@ This function will return `global_output` to the `.GlobalEnv` for use in other f
 \description{
 This will combine all tests into a `check` as a way of colecting all values for subsequent display
 }
+\details{
+This functiosn is meant to run with the associated `test` functions and not on its own.
+}
 \examples{
 
 output = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)

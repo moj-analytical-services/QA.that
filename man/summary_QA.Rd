@@ -22,7 +22,7 @@ An important function to collect all information from relative `checks` and then
 }
 \examples{
 
-## putting it all together (assuming you already have a `QA_that` folder in the root of you project):
+## putting it all together, assuming you already have a `QA_that` folder in the root of you project, otherwise please run `useQA` first
 
 ## useQA("random_QA")
 

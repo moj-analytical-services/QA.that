@@ -578,7 +578,8 @@ global_output
 
 output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
   test_equal(descr = "test description text", 12,12)
-  test_identical(descr = "test description text", 12,12.1)})
+  test_identical(descr = "test description text", 12,12.1)
+  test_match(descr = "checking that two test strings match", "DFDF","dfdf")})
 
 
 output33 = check_that(check_desc = "text round 2", {test_match(descr = "test description match text", "DFD","DFD")})

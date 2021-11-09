@@ -14,16 +14,22 @@ test_match(descr, source_value, test_value, ...)
 \item{test_value}{The other end of the comparison - This is the tested value}
 }
 \value{
-All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`
+All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`.This is a
+             binary TRUE or FALSE result for each test.
 }
 \description{
-This functioasn will test to see if two strings are identical
+This function will test to see if two strings are identical
+}
+\details{
+This function is meant to run in teh context of a `check` andnot on its own. Otherwise there will be no way to combine to a global ouput.
 }
 \examples{
 
 ## You can choose to use the function on its own but is best suited for use within a `check` and
 ## this within a `QA_that` environment
 
-test_match(descr = "checking that two test strings match", "DFDF","dfdf")
-
+output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
+ test_equal(descr = "test description text", 12,12)
+ test_identical(descr = "test description text", 12,12.1)
+ test_match(descr = "checking that two test strings match", "DFDF","dfdf")})
 }
