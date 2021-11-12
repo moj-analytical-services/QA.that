@@ -134,10 +134,9 @@ test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
 
     .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
 
+  if(length(source_value) !=  length(test_value)) stop("source and test values are of unequal length")
 
-  if(is.numeric(source_value) & is.numeric(test_value) &   (length(source_value) ==  length(test_value))  ){
-
-
+  if(is.numeric(source_value) & is.numeric(test_value)){
 
     r_sval = round(source_value, digits = rounding_digits)
     r_tval = round(test_value, digits = rounding_digits)
@@ -148,10 +147,6 @@ test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
     if(all(rndd)){ output = T}
     else if(!all(rndd)){ output = F}
     else{stop("values are out of bounds - neither TRUE or FALSE. Check if vectors have NA values.")}
-
-
-
-
 
   }else {stop("Values must be numeric. To test for text values use test_match() instead.")}
 
@@ -212,17 +207,18 @@ test_identical = function(descr, source_value, test_value, ...){
     .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
 
 
-
   output = NULL
 
-  if(is.numeric(source_value) & is.numeric(test_value)  & (length(source_value) ==  length(test_value))){
+  if (length(source_value) !=  length(test_value)) stop("source and test values are of unequal length")
+
+  if(is.numeric(source_value) & is.numeric(test_value)){
 
     all_equal <- source_value == test_value
-
 
     if(all(all_equal)){ output = T}
     else if(!all(all_equal)){ output = F}
     else{stop("values are out of bounds - neither TRUE or FALSE. Check if vectors have NA values.")}
+  }
 
 
 
@@ -274,12 +270,15 @@ test_match = function(descr,source_value, test_value, ...){
     .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
 
 
-
+  if (length(source_value) !=  length(test_value)) stop("source and test values are of unequal length")
 
   if(is.character(source_value) & is.character(test_value)){
 
-    if(source_value == test_value){ output = T}
-    else if(source_value != test_value){ output = F}
+    all_match <- source_value == test_value
+
+    if(all(all_match)){ output = T}
+    else if(!all(all_match)){ output = F}
+    else{stop("values are out of bounds - neither TRUE or FALSE. Check if vectors have NA values.")}
 
   }else {stop("Values must be characters. To test for numeric values use test_equal() or test_identical() instead.")}
 
