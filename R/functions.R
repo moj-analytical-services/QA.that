@@ -116,7 +116,7 @@ library(roxygen2)
 #' output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
 #'  test_vector_equal(descr = "test description text", a,b)
 #'                                                             })
-
+#'
 
 
 
@@ -233,6 +233,7 @@ test_identical = function(descr, source_value, test_value, ...){
 
 }
 
+}
 
 #' Test to match whether a string matches a given source value
 #'
@@ -575,72 +576,56 @@ map_write_to_log = function(check_d, log_df, log_file){
 
 summary_QA = function(..., log_file_name = NULL, del.flag = T){
 
-  # browser()
+        # browser()
 
-  dots = list(...)
+        dots = list(...)
 
-  log_df = map_dfr(dots, rbind)
+        log_df = map_dfr(dots, rbind)
 
-  # get the file name of the current script
-  # create a directory for the logs
-
-
-  root = getwd() # get root
-  log_dir = paste0(root,"/QA_that/QA_logs") # log files directory
-  log_fname_w_path = paste0(log_dir,"/", log_file_name)
+        # get the file name of the current script
+        # create a directory for the logs
 
 
-  if(is.null(log_file_name)){
-    stop("log file name is NULL. Consider naming the log file to be created.")
-  }else if(del.flag){
-    unlink(log_fname_w_path)
-    cat("Deleting file from previous run --> del.flag==T")
+        root = getwd() # get root
+        log_dir = paste0(root,"/QA_that/QA_logs") # log files directory
+        log_fname_w_path = paste0(log_dir,"/", log_file_name)
+
+
+        if(is.null(log_file_name)){
+          stop("log file name is NULL. Consider naming the log file to be created.")
+        }else if(del.flag){
+          unlink(log_fname_w_path)
+          cat("Deleting file from previous run --> del.flag==T")
+        }
+
+
+
+        log_file = file(log_fname_w_path, open = "a") #open a  file and have it ready to append text to it
+
+
+        ### to get the file name just right here -  it has .r at the end
+        # browser()
+
+        if(!dir.exists(log_dir)){
+          dir.create(paste0(root,"/QA_that/QA_logs"))
+          cat(paste("creating QA_logs directory in `QA_that` folder"))
+        }
+
+
+
+        # group the log data frame
+        log_df_grouped = log_df %>% group_by(check_description) %>% nest()
+
+
+        # now use a map to paste to the log file for each category
+
+        map2( log_df_grouped$check_description, log_df_grouped$data, map_write_to_log, log_file = log_file)
+
+
+        ## START HERE
+
+
+        return(log_df)
+
   }
-
-
-
-  log_file = file(log_fname_w_path, open = "a") #open a  file and have it ready to append text to it
-
-
-  ### to get the file name just right here -  it has .r at the end
-  # browser()
-
-  if(!dir.exists(log_dir)){
-    dir.create(paste0(root,"/QA_that/QA_logs"))
-    cat(paste("creating QA_logs directory in `QA_that` folder"))
-  }
-
-
-
-  # group the log data frame
-  log_df_grouped = log_df %>% group_by(check_description) %>% nest()
-
-
-  # now use a map to paste to the log file for each category
-
-  map2( log_df_grouped$check_description, log_df_grouped$data, map_write_to_log, log_file = log_file)
-
-
-  ## START HERE
-
-
-  return(log_df)
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

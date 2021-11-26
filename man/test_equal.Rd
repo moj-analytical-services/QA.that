@@ -2,38 +2,43 @@
 % Please edit documentation in R/functions.R
 \name{test_equal}
 \alias{test_equal}
-\title{Test to check whether two numeric values are equal.}
+\title{Test to check whether two vectors are equal.}
 \usage{
 test_equal(descr, source_value, test_value, rounding_digits = 1, ...)
 }
 \arguments{
 \item{descr}{A text string to explain what this test is about}
 
-\item{source_value}{The one end of the comaprison - This is the source/origin you are comapring to}
+\item{source_value}{The one end of the comaprison - This is the source/origin you are comapring to. In this function it has to be a
+vector of numeric values.}
 
-\item{test_value}{The other end of the comparison - This is the tested value}
+\item{test_value}{The other end of the comparison - This is the tested value. In this function it has to be a vector of numeric values.}
 
 \item{rounding_digits}{This is the number of rounding up digits to be used when comparing. Default is 1 digit}
 }
 \value{
-All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`.This is a
+All  test functions will assign their output to a global variable so as to enable reusing them in multiple `tests` and `checks`. This is a
              binary TRUE or FALSE result for each test.
 }
 \description{
 The way this function works it will allow for some digits to be rounded off in case
-numbers with minor differences.
+numbers with minor differences
 }
 \details{
-This function is meant to run in teh context of a `check` andnot on its own. Otherwise there will be no way to combine to a global ouput.
+This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
+the corresponding global container will be deleted when a `check` is ran.
 }
 \examples{
 
 ## You can choose to use the function on its own but is best suited for use within a `check` and
 ## this within a `QA_that` environment
 
+
+a = c(1,2,3)
+b = c(1,2,4)
+
 output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
- test_equal(descr = "test description text", 12,12)
- test_identical(descr = "test description text", 12,12.1)
- test_match(descr = "checking that two test strings match", "DFDF","dfdf")})
+ test_vector_equal(descr = "test description text", a,b)
+                                                            })
 
 }
