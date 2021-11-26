@@ -21,7 +21,8 @@ All  test functions will assign their output to a global variable so as to enabl
 This function will test to see if two strings are identical
 }
 \details{
-This function is meant to run in teh context of a `check` andnot on its own. Otherwise there will be no way to combine to a global ouput.
+This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
+the corresponding global container will be deleted when a `check` is ran.
 }
 \examples{
 

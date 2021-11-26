@@ -116,7 +116,7 @@ library(roxygen2)
 #' output44 = check_that(check_desc = "numeric matching test 1", {test_equal(descr = "test description text", 11,11)
 #'  test_vector_equal(descr = "test description text", a,b)
 #'                                                             })
-
+#'
 
 
 
@@ -233,6 +233,7 @@ test_identical = function(descr, source_value, test_value, ...){
 
 }
 
+}
 
 #' Test to match whether a string matches a given source value
 #'
