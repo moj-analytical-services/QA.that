@@ -51,7 +51,7 @@ library(emojifont)
 library(purrr)
 library(magrittr)
 library(crayon)
-
+library(QA.that)
 # emoji(search_emoji('smile'))
 
 

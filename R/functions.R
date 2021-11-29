@@ -381,7 +381,7 @@ check_that = function(check_desc,code, ...){
 #'
 #' @examples
 #'
-#' useQA("QA that table matches table B")
+#' useQA("QA_that_table_match_table_B")
 #'
 #'
 #'
