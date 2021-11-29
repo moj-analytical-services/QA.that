@@ -1,7 +1,7 @@
 
- Checking that: numeric matching test 1 ############################### 
+ Checking that: table A totals match ############################### 
  
-	 	test description text ----------> ✔
+	 	a total from A tables matches expct val ----------> ✔
 	 	testing vectorization ----------> ❌
 	 	test description text ----------> ❌
 	 	checking that two test strings match ----------> ❌

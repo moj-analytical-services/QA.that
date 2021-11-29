@@ -1,12 +1,12 @@
 
 
 ### required packages
-library(tidyverse)
-library(emojifont)
-library(purrr)
-library(magrittr)
-library(crayon)
-library(roxygen2)
+require(tidyverse)
+require(emojifont)
+require(purrr)
+require(magrittr)
+require(crayon)
+require(roxygen2)
 ##########################
 
 
@@ -381,7 +381,7 @@ check_that = function(check_desc,code, ...){
 #'
 #' @examples
 #'
-#' useQA("QA that table matches table B")
+#' useQA("QA_that_table_match_table_B")
 #'
 #'
 #'

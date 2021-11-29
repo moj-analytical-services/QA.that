@@ -47,3 +47,4 @@ core
 # html
 *.html
 *.nb.html
+inst/doc
