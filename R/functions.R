@@ -1,12 +1,12 @@
 
 
 ### required packages
-library(tidyverse)
-library(emojifont)
-library(purrr)
-library(magrittr)
-library(crayon)
-library(roxygen2)
+require(tidyverse)
+require(emojifont)
+require(purrr)
+require(magrittr)
+require(crayon)
+require(roxygen2)
 ##########################
 
 
