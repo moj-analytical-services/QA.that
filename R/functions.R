@@ -1,7 +1,7 @@
 
 
 ### required packages
-require(tidyverse)
+require(dplyr)
 require(emojifont)
 require(purrr)
 require(magrittr)
@@ -121,7 +121,7 @@ require(roxygen2)
 
 
 
-test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
+test_is_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
 
   output = NULL
 
@@ -367,12 +367,16 @@ check_that = function(check_desc,code, ...){
 #' Creating folder structure for QA
 #'
 #'
-#' This will create a folder structure to use with the `QA.that` package. The important thing to note here is that the function needs to be used from
+#' This will create a folder structure to use with the `QA.that` package. The important thing to note here is that, by default, the function needs to be used from
 #' the root working directory. If it runs from a script, it will be created in the directory where the corresponding script is located. The folder name is set to be `QA_that` and is supposed to be static
 #' so as to enable picking it up from otehr functions for later porcessing.
 #'
+#' Alternatively the `QA_that` folder can be created ina custom location. See details below.
 #'
-#' @param QAname The name of the first QA file to be created. This will be an `R` file and it is only required to supply just the name without the suffix `.R` of the file.
+#' @param QA_dir The complete path of the custon location to create the QA direcory. If set to NULL the current working directory will be used.
+#'
+#'
+#' @param QA_file_name The name of the first QA file to be created. This will be an `R` file and it is  required to supply the suffix `.R` of the file in the definition.
 
 #'
 #'
@@ -381,7 +385,11 @@ check_that = function(check_desc,code, ...){
 #'
 #' @examples
 #'
-#' useQA("QA_that_table_match_table_B")
+#' useQA("QA_that_table_match_table_B") ## using current workign directory
+#'
+#' use_QA(QA_dir = file.path(getwd(),"test1/test2","test3") ,  "table_A_match_table_B") ## using custom folder location
+#'
+#'
 #'
 #'
 #'
@@ -389,15 +397,36 @@ check_that = function(check_desc,code, ...){
 #'
 
 
-use_QA = function(QAname){
+use_QA = function(QA_dir = NULL, QA_file_name){
 
   # browser()
-  root = getwd()
-  QA_folder_path = paste0(root, "/QA_that")
-  QA_file_w_path = paste0(QA_folder_path,"/","QA_that_",QAname,".R")
-  QA_file_name = paste0("QA_that_",QAname,".R")
+  require(dplyr)
+  require(emojifont)
+  require(purrr)
+  require(magrittr)
+  require(crayon)
 
-  log_dir = paste0(root,"/QA_that/QA_logs") # log files directory
+
+
+  ## GP addition  here - manually specify  the QA directory if option is NOT NULL
+
+  if(is.null(QA_dir)){
+
+    root = getwd()
+
+  }else{
+
+    root = QA_dir
+
+  }
+
+
+
+  QA_folder_path =  file.path(root,"QA_that")
+  QA_file_name = paste0("QA_that_",QA_file_name)
+  QA_file_w_path =   file.path(QA_folder_path,QA_file_name)
+
+  log_dir = file.path(root, "QA_that","QA_logs")         # log files directory
 
 
   ## create a QA folder to house the tests etc
@@ -407,7 +436,7 @@ use_QA = function(QAname){
              Ideally one such QA folder should ezxist per project to avoid confusion."))
   }else{
 
-    dir.create(QA_folder_path)
+    dir.create(QA_folder_path,recursive = TRUE, showWarnings = TRUE) ## also checks if directrory already exists and puts out a warning if it does - keep this in mind
     cat(paste0("\n", "directory ","`QA_that`", " was created ----> ", green("\u2714")))
 
   }
@@ -445,6 +474,23 @@ use_QA = function(QAname){
     cat(paste0("\n", "QA_logs directory was created ----> ", green("\u2714")))
 
   }
+
+
+  ## set up output list with file and path info
+
+  #output list containing for later use
+  file_info = list(QA_logs_dir = log_dir,
+                   QA_folder_path = QA_folder_path,
+                   QA_file_w_path = QA_file_w_path,
+                   QA_file_name = QA_file_name,
+                   root_used = root)
+
+
+
+return(file_info)
+
+
+
 
 }
 
@@ -574,58 +620,101 @@ map_write_to_log = function(check_d, log_df, log_file){
 #'
 #'
 
-summary_QA = function(..., log_file_name = NULL, del.flag = T){
+summary_QA = function(..., QA_logs_dir = NULL, log_file_name = NULL, del.flag = T){
 
-        # browser()
+  require(purrr)
+  require(dplyr)
 
-        dots = list(...)
+  # browser()
 
-        log_df = map_dfr(dots, rbind)
+  dots = list(...)
 
-        # get the file name of the current script
-        # create a directory for the logs
+  log_df = map_dfr(dots, rbind)
 
-
-        root = getwd() # get root
-        log_dir = paste0(root,"/QA_that/QA_logs") # log files directory
-        log_fname_w_path = paste0(log_dir,"/", log_file_name)
+  # create a directory for the logs
 
 
-        if(is.null(log_file_name)){
-          stop("log file name is NULL. Consider naming the log file to be created.")
-        }else if(del.flag){
-          unlink(log_fname_w_path)
-          cat("Deleting file from previous run --> del.flag==T")
-        }
-
-
-
-        log_file = file(log_fname_w_path, open = "a") #open a  file and have it ready to append text to it
-
-
-        ### to get the file name just right here -  it has .r at the end
-        # browser()
-
-        if(!dir.exists(log_dir)){
-          dir.create(paste0(root,"/QA_that/QA_logs"))
-          cat(paste("creating QA_logs directory in `QA_that` folder"))
-        }
+#
+#
+#   if(!dir.exists(log_dir)){
+#     dir.create(paste0(root,"/QA_that/QA_logs"))
+#     cat(paste("creating QA_logs directory in `QA_that` folder"))
+#   }
+#
+#   if(!dir.exists(log_dir)){
+#     dir.create(QA_logs_dir)
+#     cat(paste("creating QA_logs directory in `QA_that` folder"))
+#   }
 
 
 
-        # group the log data frame
-        log_df_grouped = log_df %>% group_by(check_description) %>% nest()
+  ## default option - no logs dir definition
+  ##
+  if(is.null(QA_logs_dir)){
+
+    root = getwd()
+    log_dir = file.path(getwd(),"QA_that","QA_logs")
+
+    # check if dir exists and if not create it
+    if(!dir.exists(log_dir)){
+      dir.create(logs_dir, recursive = TRUE, showWarnings = TRUE)
+      cat(paste("QA logs dir does not exist - creating it in `QA_that` folder"))
+    }
 
 
-        # now use a map to paste to the log file for each category
+  }else{ ## custom location for the logs directory
 
-        map2( log_df_grouped$check_description, log_df_grouped$data, map_write_to_log, log_file = log_file)
+    log_dir = QA_logs_dir
+
+    # check if dir exists and if not create it
+    if(!dir.exists(log_dir)){
+      dir.create(log_dir, recursive = TRUE, showWarnings = TRUE)
+      cat(paste("QA logs dir does not exist - creating it in `QA_that` folder"))
+    }
+
+  }
+
+  # root = getwd() # get root
+  # log_dir = paste0(root,"/QA_that/QA_logs") # log files directory
+
+  # get the file name of the current script
+  # log_fname_w_path = paste0(log_dir,"/", log_file_name)
+
+  log_fname_w_path = file.path(log_dir, log_file_name)   #paste0(log_dir,"/", log_file_name)
+
+  if(is.null(log_file_name)){
+    stop("log file name is NULL. Consider naming the log file to be created.")
+  }else if(del.flag){
+    unlink(log_fname_w_path)
+    cat("Deleting file from previous run --> del.flag==T")
+  }
 
 
-        ## START HERE
+
+  log_file = file(log_fname_w_path, open = "a") #open a  file and have it ready to append text to it
 
 
-        return(log_df)
+  ### to get the file name just right here -  it has .r at the end
+  # browser()
+
+
+
+  # group the log data frame
+  log_df_grouped = log_df %>% group_by(check_description) %>% nest()
+
+
+  # now use a map to paste to the log file for each category
+
+  map2( log_df_grouped$check_description, log_df_grouped$data, map_write_to_log, log_file = log_file)
+
+
+
+  ## close the file after logging everything
+  close(log_file)
+
+
+
+  return(log_df)
 
   }
 
