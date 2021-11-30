@@ -4,7 +4,8 @@
 \alias{summary_QA}
 \title{Summary function for data collection}
 \usage{
-summary_QA(..., log_file_name = NULL, del.flag = T)
+summary_QA(..., QA_logs_dir = NULL, log_file_name = NULL,
+  del.flag = T)
 }
 \arguments{
 \item{...}{A collection of all the different dataframes coming from the corrsponding `checks`}

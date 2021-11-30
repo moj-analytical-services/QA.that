@@ -4,23 +4,32 @@
 \alias{use_QA}
 \title{Creating folder structure for QA}
 \usage{
-use_QA(QAname)
+use_QA(QA_dir = NULL, QA_file_name)
 }
 \arguments{
-\item{QAname}{The name of the first QA file to be created. This will be an `R` file and it is only required to supply just the name without the suffix `.R` of the file.}
+\item{QA_dir}{The complete path of the custon location to create the QA direcory. If set to NULL the current working directory will be used.}
+
+\item{QA_file_name}{The name of the first QA file to be created. This will be an `R` file and it is  required to supply the suffix `.R` of the file in the definition.}
 }
 \value{
 The function will return a folder structure in the root of the main workign directory and a first QA file to get things started. In addition, a `QA_logs` folder
 will also be created to store the corresponding logs from the QA process.
 }
 \description{
-This will create a folder structure to use with the `QA.that` package. The important thing to note here is that the function needs to be used from
-the root working directory otherwise it will be created in a different place than the one intended. The folde rname is set to be `QA_that` and is supposed to be static
+This will create a folder structure to use with the `QA.that` package. The important thing to note here is that, by default, the function needs to be used from
+the root working directory. If it runs from a script, it will be created in the directory where the corresponding script is located. The folder name is set to be `QA_that` and is supposed to be static
 so as to enable picking it up from otehr functions for later porcessing.
+}
+\details{
+Alternatively the `QA_that` folder can be created ina custom location. See details below.
 }
 \examples{
 
-useQA("QA that table matches table B")
+useQA("QA_that_table_match_table_B") ## using current workign directory
+
+use_QA(QA_dir = file.path(getwd(),"test1/test2","test3") ,  "table_A_match_table_B") ## using custom folder location
+
+
 
 
 

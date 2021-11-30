@@ -121,7 +121,7 @@ require(roxygen2)
 
 
 
-test_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
+test_is_equal = function(descr, source_value, test_value, rounding_digits=1, ...){
 
   output = NULL
 
