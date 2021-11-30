@@ -1,54 +1,24 @@
 ---
-title: "QA.that Package Introduction"
-author: "George Papadopoulos"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{QA_That_Introduction}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
 )
 ```
 
-```{r setup}
-library(QA.that)
-```
+# QA.that 
 
-
-
-## Initialization
-
-The following pacakgs are needed to run the package 
-
-```{r, echo = FALSE, eval=FALSE}
-
-library(dplyr)
-library(emojifont)
-library(purrr)
-library(magrittr)
-library(crayon)
-library(QA.that)
-# emoji(search_emoji('smile'))
-
-
-
-```
-
-
-
-
+This package was created in an attempt to automate the QA for publications in the Ministry of Justice (MoJ). The obvious inspiration comes from the `test_that` package in R that in turn was inspirted from test practices applied in C#, Java, Python etc. Many thanks to the developers of those packages as well.
 
 
 ## Introduction 
-
-
-The obvious inspiration comes from the `test_that` package in R that in turn was inspirted from test practices applied in C#, Java, Python etc. Many thanks to the developers of those packages as well.
-
 
 The concept here is to include `tests` that are combined into a `checks` that are in turn collected into sections/chapoters for each area/code we want to QA.
 
@@ -65,7 +35,7 @@ More specifically, the collection here wil aim at including the following:
     + `test_false`## to be implemented
     + `test_NA`## to be implemented
     + any other that may arise in the future
-+ The `tests` will be combined into `checks` as follows:
++ The `test_...()`(s) will be combined into `check_that()`(s) as follows:
     + `check_that("text description", {test_is_equal(...), test_identical(...). ...}  )`
     + output will be a summary of the whole process
     + see if warnings can be caught there as well
@@ -75,9 +45,63 @@ More specifically, the collection here wil aim at including the following:
     `QA_that_` so as to distinguish them from anything else and also they need to be included in a `QA_that` folder
     + `QA_that_`(s) can be for example tests that need to be conducted in A or B tables in PRSQ
     + For better structure all files should start with `QA_that_` prefix so as to be able to collect results better
+    
+    
+    
+## Installation
+
+You can install the released version of QA.that from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("QA.that")
+```
+
+And the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("moj-analytical-services/QA.that")
+
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(QA.that)
+```
 
 
-### Things to remember:
+
+
+## Explaining the process step by step
+
+A number of other excelent packages were used to construct `QA.that` as follows (with many thanks to authors): 
+
+
+
+```{r, echo = TRUE, eval=FALSE}
+
+library(dplyr)
+library(emojifont)
+library(purrr)
+library(magrittr)
+library(crayon)
+library(QA.that)
+# emoji(search_emoji('smile'))
+
+
+
+```
+
+
+
+
+### Covering the basics
 
 + QA files should start with `QA_that_` so that they make sense and also to enbable the system to pick them up esier. For examnple `QA_that_A_tables_are_in_line_with_B.R`
 + all QA should be in one folder and the starting point is considered the root directory of your project by default. There is an option to allow for custom paths in creating these folders
@@ -88,9 +112,6 @@ More specifically, the collection here wil aim at including the following:
 ### QA logs and other elements
 
 The process will create a corresponding QA log to contain and summarise all the tests conducted in your code and tables. The output of the functions are neatly contained in a list dataframes so that further analysis can be added as needed.
-
-
-## Explaining the process step by step
 
 
 ### Creating a folder structure
