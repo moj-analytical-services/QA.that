@@ -368,7 +368,7 @@ check_that = function(check_desc,code, ...){
 #'
 #'
 #' This will create a folder structure to use with the `QA.that` package. The important thing to note here is that the function needs to be used from
-#' the root working directory otherwise it will be created in a different place than the one intended. The folde rname is set to be `QA_that` and is supposed to be static
+#' the root working directory. If it runs from a script, it will be created in the directory where the corresponding script is located. The folder name is set to be `QA_that` and is supposed to be static
 #' so as to enable picking it up from otehr functions for later porcessing.
 #'
 #'

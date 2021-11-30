@@ -216,7 +216,7 @@ qa_overview = summary_QA(output44,output33, log_file_name = "log_that_other_file
 
 
 
-## Examples - putting it all together
+## Examples - Putting it all together
 
 The following code is an overview of trhe whole process. This will need to run, ideally, from an R script located in the `QA_that` folder. If you ahve to run it as it is (from the markdown here), please also uncomment and run the `use_QA()` function as well otherwise the system will not be able to find a QA folder and you will get an error !   
 
