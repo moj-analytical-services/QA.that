@@ -24,7 +24,7 @@ library(QA.that)
 
 The following pacakgs are needed to run the package 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval=FALSE}
 
 library(dplyr)
 library(emojifont)
@@ -123,11 +123,11 @@ use_QA(QA_dir = file.path("directory_path_placed_here"), QA_file_name = "QA_that
 ### Conducting tests
 
 
-Having done that the next steps are to start coding your QA tests. As mentioned in the introduction section above, this will require including a number of `test_...` *within* a `check()`. These are specialised functions that were made to help with the hierarchical structure of the code.  
+Having done that the next steps are to start coding your QA tests. As mentioned in the introduction section above, this will require including a number of `test_...` *within* a `check_that()`. These are specialised functions that were made to help with the hierarchical structure of the code.  
 
 For example take the following code
 
-```{r}
+```{r, eval=FALSE}
 
 output44 = check_that(check_desc = "numeric matching test 1", {test_is_equal(descr = "test description text", 11,11)
   test_is_equal(descr = "testing vectorization",c(1,2,2,3),c(1,2,3,5))
@@ -155,16 +155,16 @@ The way to use them is specified in the corresponding help files but almost all 
 meaning they will require a description (`descr`) for the test, the `source_value` and `test_value`. The rest of the arguments will depend on the function type. 
 
 
-**IMPORTANT NOTE: ** Running the functions on their own is possible but not recommended (this will be possible removed a functionality in future versions). This will result in augmenting the global container as all tests are linked if not run as part of a `check()`.
+**IMPORTANT NOTE: ** Running the functions on their own is possible but not recommended (this will be possible removed a functionality in future versions). This will result in augmenting the global container as all tests are linked if not run as part of a `check_that()`.
 
 Notice that in the example below running the test on its own will result in augmenting the `global_container` variable regardless of whether a copy is assigned or not. This is by design as the tests should be housed and relate to one specific check that is conducted.  
 
 
-```{r}
+```{r, eval=FALSE}
 
 global_copy = test_is_equal(descr = "testing vectorization",c(1,2,2,3),c(1,2,3,5))
 
-## the variables below are the same !!
+## the variables below are/should be the same !!
 
 global_output
 
@@ -173,20 +173,20 @@ global_copy
 ```
 
 
-### Including `test_..()` within a `check()`
+### Including `test_..()` within a `check_that()`
 
-The whole idea is to enable batch testing within a certain coherent setting. With this in mind the `check()` function will be used to include all the tests relative to that portion of the QA. Think of this as a section of a greater chapter of the QA process.
+The whole idea is to enable batch testing within a certain coherent setting. With this in mind the `check_that()` function will be used to include all the tests relative to that portion of the QA. Think of this as a section of a greater chapter of the QA process.
 
 Tests will be collected in check that will be collected in a section/chapter of the QA. Imagine that you want to conduct a number of tests for table A1 from PRSQ; this will be later added to similar tests for A2 etc. All of them will be combined in a chapter, this being one of the files created within the `QA_that` folder mentioned at the beginning of this guide.
 
 In this way different developers will be able to communicate and code the QA without affecting each others work. Each will work on separate standalone chapters.
 
-**IMPORTANT NOTE:** The `global_output` has a local scope within a check and this is by design. This means that if you are looking for a concrete variable to take forward you are looking for an output from a `check()` function. 
+**IMPORTANT NOTE:** The `global_output` has a local scope within a check and this is by design. This means that if you are looking for a concrete variable to take forward you are looking for an output from a `check_that()` function. 
 
-So in other words, the `check()` will provide the variable necessary to later add to the summary functions before populating the logs etc.
+So in other words, the `check_that()` will provide the variable necessary to later add to the summary functions before populating the logs etc.
 
 
-```{r}
+```{r, eval=FALSE}
 
 
 output33 = check_that(check_desc = "text round 2", {test_match(descr = "test description match text", "DFD","DFD")})
@@ -240,7 +240,7 @@ Furtheremore, there is an option include in both use_QA() and summary_QA() funct
 ## 
 
 
-use_QA(QAname = "QA_that_A_B_match")
+use_QA(QAname = "QA_that_A_B_match.R")
 
 output44 = check_that(check_desc = "numeric matching test 1", {test_is_equal(descr = "test description text", 11,11)
   test_is_equal(descr = "testing vectorization",c(1,2,2,3),c(1,2,3,5))
@@ -273,7 +273,7 @@ qa_overview = summary_QA(output44,output33, output45, log_file_name = "log_that_
 ## 
 
 
-file_info_list = use_QA( QA_logs_dir = file.path( "place_custom_root_directory_here","test_folder"), QA_file_name = "QA_that_A_B_match")
+file_info_list = use_QA( QA_logs_dir = file.path( "place_custom_root_directory_here","test_folder"), QA_file_name = "QA_that_A_B_match.R")
 
 output44 = check_that(check_desc = "numeric matching test 1", {test_is_equal(descr = "test description text", 11,11)
   test_is_equal(descr = "testing vectorization",c(1,2,2,3),c(1,2,3,5))
