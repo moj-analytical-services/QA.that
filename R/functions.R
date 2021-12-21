@@ -85,7 +85,7 @@ require(roxygen2)
 
 
 
-#' Test to check whether two vectors are equal.
+#' Test to check whether two numeric vectors are equal.
 #'
 #'
 #' The way this function works it will allow for some digits to be rounded off in case
@@ -171,7 +171,7 @@ test_is_equal = function(descr, source_value, test_value, rounding_digits=1, ...
 
 
 
-#' Test to check whether two values are identical
+#' Test to check whether two numeric vectors are identical
 #'
 #'
 #' This function will test for strict equality between a source and a test value
@@ -235,10 +235,8 @@ test_identical = function(descr, source_value, test_value, ...){
 
 }
 
-#' Test to match whether a string matches a given source value
+#' Test to check whether two character vectors are identical
 #'
-#'
-#' This function will test to see if two strings are identical
 #'
 #' This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
 #' the corresponding global container will be deleted when a `check` is ran.
@@ -275,12 +273,15 @@ test_match = function(descr,source_value, test_value, ...){
     .GlobalEnv$global_output = tibble(test_description = character(), outcome = logical()) }
 
 
-
+  if (length(source_value) !=  length(test_value)) stop("source and test values are of unequal length")
 
   if(is.character(source_value) & is.character(test_value)){
 
-    if(source_value == test_value){ output = T}
-    else if(source_value != test_value){ output = F}
+    all_match <- source_value == test_value
+
+    if(all(all_match)){ output = T}
+    else if(!all(all_match)){ output = F}
+    else{stop("values are out of bounds - neither TRUE or FALSE. Check if vectors have NA values.")}
 
   }else {stop("Values must be characters. To test for numeric values use test_equal() or test_identical() instead.")}
 
