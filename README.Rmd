@@ -86,7 +86,7 @@ A number of other excelent packages were used to construct `QA.that` as follows 
 
 ```{r, echo = TRUE, eval=FALSE}
 
-library(dplyr)
+library(tidyverse)
 library(emojifont)
 library(purrr)
 library(magrittr)
@@ -177,7 +177,7 @@ The way to use them is specified in the corresponding help files but almost all 
 meaning they will require a description (`descr`) for the test, the `source_value` and `test_value`. The rest of the arguments will depend on the function type. 
 
 
-**IMPORTANT NOTE: ** Running the functions on their own is possible but not recommended (this will be possible removed a functionality in future versions). This will result in augmenting the global container as all tests are linked if not run as part of a `check_that()`.
+**IMPORTANT NOTE: ** Running the functions on their own is possible but not recommended (this functionality will be possibly removed in future versions). This will result in augmenting the global container as all tests are linked if not run as part of a `check_that()`.
 
 Notice that in the example below running the test on its own will result in augmenting the `global_container` variable regardless of whether a copy is assigned or not. This is by design as the tests should be housed and relate to one specific check that is conducted.  
 
@@ -262,7 +262,7 @@ Furtheremore, there is an option include in both use_QA() and summary_QA() funct
 ## 
 
 
-use_QA(QAname = "QA_that_A_B_match.R")
+use_QA(QA_file_name = "QA_that_A_B_match.R")
 
 output44 = check_that(check_desc = "numeric matching test 1", {test_is_equal(descr = "test description text", 11,11)
   test_is_equal(descr = "testing vectorization",c(1,2,2,3),c(1,2,3,5))
@@ -295,7 +295,7 @@ qa_overview = summary_QA(output44,output33, output45, log_file_name = "log_that_
 ## 
 
 
-file_info_list = use_QA( QA_logs_dir = file.path( "place_custom_root_directory_here","test_folder"), QA_file_name = "QA_that_A_B_match.R")
+file_info_list = use_QA( QA_dir = file.path( "place_custom_root_directory_here","test_folder"), QA_file_name = "QA_that_A_B_match.R")
 
 output44 = check_that(check_desc = "numeric matching test 1", {test_is_equal(descr = "test description text", 11,11)
   test_is_equal(descr = "testing vectorization",c(1,2,2,3),c(1,2,3,5))
