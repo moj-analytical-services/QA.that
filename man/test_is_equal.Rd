@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{test_is_equal}
 \alias{test_is_equal}
-\title{Test to check whether two vectors are equal.}
+\title{Test to check whether two numeric vectors are equal.}
 \usage{
 test_is_equal(descr, source_value, test_value, rounding_digits = 1, ...)
 }

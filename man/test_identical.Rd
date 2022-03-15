@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{test_identical}
 \alias{test_identical}
-\title{Test to check whether two values are identical}
+\title{Test to check whether two numeric vectors are identical}
 \usage{
 test_identical(descr, source_value, test_value, ...)
 }

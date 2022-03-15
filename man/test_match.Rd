@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{test_match}
 \alias{test_match}
-\title{Test to match whether a string matches a given source value}
+\title{Test to check whether two character vectors are identical}
 \usage{
 test_match(descr, source_value, test_value, ...)
 }
@@ -18,9 +18,6 @@ All  test functions will assign their output to a global variable so as to enabl
              binary TRUE or FALSE result for each test.
 }
 \description{
-This function will test to see if two strings are identical
-}
-\details{
 This function is meant to run in the context of a `check` and not on its own. You can run it in stand alone mode to test the output but
 the corresponding global container will be deleted when a `check` is ran.
 }
