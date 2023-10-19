@@ -298,7 +298,7 @@ you have to run it as it is (from the markdown here), please also
 uncomment and run the `use_QA()` function as well otherwise the system
 will not be able to find a QA folder and you will get an error \!
 
-Furtheremore, there is an option include in both use\_QA() and
+Furthermore, there is an option include in both use\_QA() and
 summary\_QA() functions that allow for custom fodler paths to be
 included. More information is available in the help files. The example
 below illustrate how to use the arguments and manually specify the
