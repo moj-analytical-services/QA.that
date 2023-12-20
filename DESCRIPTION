@@ -1,6 +1,6 @@
 Package: QA.that
 Type: Package
-Title: What the Package Does (Title Case)
+Title: QA.that
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
@@ -9,7 +9,14 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Imports:
+    crayon,
+    emojifont,
+    magrittr,
+    purrr,
+    tidyverse
 Suggests: 
     knitr,
     rmarkdown
